@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Katana</title>
+<meta name="description" content="Katana is an agentic workspace for macOS. Talk to it, and coding agents do the work.">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  /* Colours come from KatanaTheme.swift: frame, glow, text. */
+  :root {
+    --frame: #070709;
+    --text-strong: #ffffff;
+    --text-secondary: #BCBDC6;
+    --text-tertiary: #95969E;
+    --hx: 65%;
+    --hy: 50%;
+    --hsize: 80vh;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--frame);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* The app's frame: a red vertical gradient from the top. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to bottom,
+      rgba(227, 52, 47, .11) 0%,
+      rgba(227, 52, 47, .035) 20%,
+      rgba(227, 52, 47, 0) 38%);
+  }
+  .aura {
+    position: fixed;
+    left: var(--hx);
+    top: var(--hy);
+    width: var(--hsize);
+    height: var(--hsize);
+    transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side,
+      rgba(227, 52, 47, .15),
+      rgba(227, 52, 47, .05) 55%,
+      rgba(227, 52, 47, 0));
+    /* Arrives after the head, so the opening has no round glow. */
+    animation: aura-in 2s ease 2s both;
+  }
+  @keyframes aura-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .hero {
+    position: fixed;
+    /* Stays with the head on very wide windows: see stage.maxWidth in main.js. */
+    left: max(7vw, calc(50vw - 774px));
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 30rem;
+    z-index: 1; /* above the canvas, so particles pass behind the text */
+  }
+  .kicker {
+    margin: 0 0 18px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .01em;
+    color: var(--text-tertiary);
+  }
+  h1 {
+    margin: 0 0 18px;
+    font-size: clamp(56px, 7vw, 104px);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -.03em;
+    color: var(--text-strong);
+  }
+  .line {
+    margin: 0;
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 1.45;
+    color: var(--text-secondary);
+  }
+  canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .still { display: none; }
+  /* Without WebGL2 the head is a still picture. */
+  .no-gl canvas { display: none; }
+  .no-gl .still {
+    display: block;
+    position: fixed;
+    left: var(--hx);
+    top: var(--hy);
+    height: var(--hsize);
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+  }
+  #stats {
+    position: fixed;
+    right: 14px;
+    bottom: 12px;
+    font: 12px/1.4 ui-monospace, Menlo, monospace;
+    color: var(--text-tertiary);
+    white-space: pre;
+    text-align: right;
+  }
+  @media (max-width: 760px), (max-aspect-ratio: 1/1) {
+    .hero {
+      left: 24px;
+      right: 24px;
+      top: auto;
+      bottom: 40px;
+      transform: none;
+      max-width: none;
+    }
+    .kicker { margin-bottom: 10px; }
+    h1 { margin-bottom: 10px; }
+  }
+
+  /* The ?v=hello version: head in the middle, big pixel letters behind it. */
+  #hello { display: none; }
+  [data-layout="hello"] #hello {
+    display: block;
+    position: fixed;
+    left: 20px;
+    top: 21vh;
+    width: calc(100% - 40px);
+    height: auto;
+    fill: #BEBFC6;
+    shape-rendering: crispEdges;
+  }
+  [data-layout="hello"] .hero {
+    top: auto;
+    bottom: 32px;
+    left: 32px;
+    transform: none;
+    max-width: 24rem;
+  }
+  [data-layout="hello"] .kicker { margin-bottom: 10px; }
+  [data-layout="hello"] h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  [data-layout="hello"] .line {
+    font-size: 18px;
+    color: var(--text-strong);
+  }
+  [data-layout="hello"] .more { color: var(--text-tertiary); }
+  @media (max-width: 760px), (max-aspect-ratio: 1/1) {
+    [data-layout="hello"] #hello { top: 9vh; }
+    [data-layout="hello"] .hero { left: 24px; right: 24px; bottom: 32px; max-width: none; }
+  }
+</style>
+</head>
+<body>
+  <div class="aura"></div>
+  <svg id="hello" aria-hidden="true"></svg>
+  <main class="hero">
+    <p class="kicker">Agentic workspace for macOS</p>
+    <h1>Katana</h1>
+    <p class="line">You make the calls.<br>Katana orchestrates the rest.</p>
+  </main>
+  <img class="still" src="assets/face.png" alt="">
+  <canvas id="head" aria-hidden="true"></canvas>
+  <script src="main.js"></script>
+</body>
+</html>
